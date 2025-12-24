@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import type { ComponentProps } from 'react';
 import { TabParamList } from '../types/types';
-
+import { useTheme } from '../theme/ThemeContext';
 import Usuario from '../screens/Usuario/ScreenUser';
 import MinhasCartas from '../screens/MinhasCartas/ScreenMinhasCartas';
 import Perfil from '../screens/Perfil/ScreenPerfil';
@@ -16,17 +16,17 @@ type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
 
 export default function TabNavigator() {
   const insets = useSafeAreaInsets();
-
+  const { theme } = useTheme();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
 
-        tabBarActiveTintColor: '#B41513',
-        tabBarInactiveTintColor: '#B41513',
+        tabBarActiveTintColor: theme.text,
+        tabBarInactiveTintColor: theme.text,
 
         tabBarStyle: {
-          backgroundColor: '#fff',
+          backgroundColor: theme.buttonBackground,
           borderTopWidth: 0,
           height: 65 + insets.bottom,
           paddingBottom: insets.bottom,
@@ -56,13 +56,13 @@ export default function TabNavigator() {
                 height: 35,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: focused ? '#B41513' : 'transparent',
+                backgroundColor: focused ? theme.circlebar : 'transparent',
               }}
             >
               <MaterialCommunityIcons
                 name={iconName}
                 size={24}
-                color={focused ? "#ffffffff" : color}
+                color={focused ? theme.iconbar : color}
               />
             </View>
           );

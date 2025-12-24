@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { recoverRequest } from "../../services/auth";
 import Loading from '../Loading/loading';
+import { useTheme } from '../../theme/ThemeContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Recover">;
 
@@ -16,9 +17,13 @@ export default function Recover() {
   const navigation = useNavigation<NavigationProp>();
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+  const { theme} = useTheme();
+
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const styles = Styles(theme);
 
   const validateForm = async () => {
     try {
@@ -30,7 +35,7 @@ export default function Recover() {
       if (response.status === 200) {
         await AsyncStorage.setItem("recoverEmail", email);
         await delay(3000);
-        navigation.navigate("Code");
+        navigation.replace("Code");
       }
 
     } catch (err: any) {
@@ -47,28 +52,28 @@ export default function Recover() {
 
   return (
     <>
-      <SafeAreaView style={Styles.container}>
+      <SafeAreaView style={styles.container}>
         <TouchableOpacity
-          style={Styles.backButton}
+          style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
           <MaterialCommunityIcons name="arrow-left" size={32} color="#B41513" />
         </TouchableOpacity>
 
-        <View style={Styles.content}>
-          <View style={Styles.header}>
+        <View style={styles.content}>
+          <View style={styles.header}>
             <Image
               source={require('../../assets/carta-coracao.png')}
-              style={Styles.logo}
+              style={styles.logo}
               resizeMode="contain"
             />
-            <Text style={Styles.title}>{"Recuperar senha."}</Text>
+            <Text style={styles.title}>{"Recuperar senha."}</Text>
           </View>
 
-          <View style={Styles.form}>
-            <Text style={Styles.titleinputs}>email</Text>
+          <View style={styles.form}>
+            <Text style={styles.titleinputs}>email</Text>
             <TextInput
-              style={Styles.input}
+              style={styles.input}
               placeholder="email"
               placeholderTextColor="#999"
               keyboardType="email-address"
@@ -76,12 +81,12 @@ export default function Recover() {
               onChangeText={setEmail}
             />
 
-            {error !== '' && <Text style={Styles.error}>{error}</Text>}
+            {error !== '' && <Text style={styles.error}>{error}</Text>}
           </View>
 
-          <View style={Styles.buttonContainer}>
-            <TouchableOpacity style={Styles.button} onPress={validateForm}>
-              <Text style={Styles.buttonText}>Recuperar senha</Text>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={validateForm}>
+              <Text style={styles.buttonText}>Recuperar senha</Text>
             </TouchableOpacity>
           </View>
 

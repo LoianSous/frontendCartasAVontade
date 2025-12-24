@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { api } from "../../services/api";
 import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, Platform, Share } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Styles } from './style';
@@ -18,7 +17,9 @@ import { supabase } from "../../services/supabase";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { generateShareId } from '../../services/generateShareId';
 import Toast from 'react-native-toast-message';
-import { Animated, Dimensions, Easing } from 'react-native';
+import { Animated, Easing } from 'react-native';
+import Loading from '../Loading/loading';
+import { useTheme } from '../../theme/ThemeContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "FormularioCarta">;
 
@@ -42,44 +43,50 @@ export default function FormularioCarta() {
   const [signo, setSigno] = useState('');
   const [photos, setPhotos] = useState<{ id: number; uri: string; mime?: string; name?: string }[]>([]);
   const [showPicker, setShowPicker] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { theme} = useTheme();
+
+  const styles = Styles(theme);
+
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   const totalSteps = 3;
-const progressAnim = React.useRef(new Animated.Value(0)).current;
+  const progressAnim = React.useRef(new Animated.Value(0)).current;
 
-const BAR_WIDTH = 200; // largura da linha animada em pixels
-const CIRCLE_SIZE = 24;
-const HORIZONTAL_PADDING = 20;
+  const BAR_WIDTH = 200; // largura da linha animada em pixels
+  const CIRCLE_SIZE = 24;
+  const HORIZONTAL_PADDING = 20;
 
-React.useEffect(() => {
-  Animated.timing(progressAnim, {
-    toValue: step - 1, // 0, 1, 2
-    duration: 400,
-    easing: Easing.out(Easing.ease),
-    useNativeDriver: false,
-  }).start();
-}, [step]);
+  React.useEffect(() => {
+    Animated.timing(progressAnim, {
+      toValue: step - 1, // 0, 1, 2
+      duration: 400,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: false,
+    }).start();
+  }, [step]);
 
 
 
   const showToast = (message: string) => {
-  Toast.show({
-    type: 'error',
-    text1: 'Campos obrigatórios',
-    text2: message,
-    position: 'top',
-    visibilityTime: 3000,
-  });
-};
+    Toast.show({
+      type: 'error',
+      text1: 'Campos obrigatórios',
+      text2: message,
+      position: 'top',
+      visibilityTime: 3000,
+    });
+  };
 
-const showSuccessToast = (message: string) => {
-  Toast.show({
-    type: 'success',
-    text1: 'Tudo certo ✅',
-    text2: message,
-    position: 'top',
-    visibilityTime: 2000,
-  });
-};
+  const showSuccessToast = (message: string) => {
+    Toast.show({
+      type: 'success',
+      text1: 'Tudo certo ✅',
+      text2: message,
+      position: 'top',
+      visibilityTime: 2000,
+    });
+  };
 
   const validateStep = (currentStep: number) => {
     if (currentStep === 1) {
@@ -253,6 +260,8 @@ const showSuccessToast = (message: string) => {
 
   const handleSubmit = async () => {
     try {
+      setLoading(true);
+      await delay(3000);
       const token = await AsyncStorage.getItem("autToken");
       const userId = await AsyncStorage.getItem("userId");
 
@@ -262,7 +271,7 @@ const showSuccessToast = (message: string) => {
       }
 
       const shareId = generateShareId(12);
-      const publicHost = process.env.EXPO_PUBLIC_WEB_URL || "http://192.168.1.4:3000";
+      const publicHost = process.env.EXPO_PUBLIC_WEB_URL || "http://192.168.1.7:3000";
       const fullShareUrl = `${publicHost}/letters/${shareId}`;
 
       // 1️⃣ Salvar carta
@@ -311,9 +320,10 @@ const showSuccessToast = (message: string) => {
 
       console.log("Fotos enviadas e vinculadas com sucesso!");
 
-      navigation.navigate("Conclusao", { shareLink: fullShareUrl, share_url: shareId });
+      navigation.replace("Conclusao", { shareLink: fullShareUrl, share_url: shareId });
 
     } catch (err) {
+      setLoading(false);
       console.error("Erro ao salvar carta:", err);
     }
   };
@@ -324,241 +334,244 @@ const showSuccessToast = (message: string) => {
 
 
   return (
-    <SafeAreaView style={Styles.container}>
-      <TouchableOpacity
-        style={Styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
-        <MaterialCommunityIcons name="arrow-left" size={32} color="#B41513" />
-      </TouchableOpacity>
-      <ScrollView>
-        <View style={Styles.content}>
-
-          <View style={Styles.header}>
-            <Image
-              source={require('../../assets/carta-coracao.png')}
-              style={Styles.logo}
-              resizeMode="contain"
-            />
-            <Text style={Styles.title}>Escreva sua carta!</Text>
-          </View>
-
-          <View style={Styles.form}>
-
-            {/* INDICADOR */}
-            <View style={{ marginHorizontal: 20, marginVertical: 20}}>
-  {/* Linha de fundo */}
-  <View
-    style={{
-      width: BAR_WIDTH,
-      height: 4,
-      backgroundColor: '#E0E0E0',
-      marginHorizontal: HORIZONTAL_PADDING + CIRCLE_SIZE / 2,
-      borderRadius: 2,
-      position: 'relative',
-    }}
-  />
-
-  {/* Linha animada */}
-  <Animated.View
-    style={{
-      position: 'absolute',
-      left: HORIZONTAL_PADDING + CIRCLE_SIZE / 2,
-      height: 4,
-      backgroundColor: '#4CAF50',
-      borderRadius: 2,
-      width: progressAnim.interpolate({
-        inputRange: [0, totalSteps - 1],
-        outputRange: [0, 200],
-      }),
-    }}
-  />
-
-  {/* Bolinhas */}
-  <View
-    style={{
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginHorizontal: HORIZONTAL_PADDING,
-      marginTop: -15,
-    }}
-  >
-    {[1, 2, 3].map((item) => {
-      const isCompleted = step > item;
-      const isCurrent = step === item;
-
-      return (
-        <View
-          key={item}
-          style={{
-            width: 24,
-            height: 24,
-            borderRadius: 12,
-            backgroundColor: isCompleted
-              ? '#4CAF50'
-              : isCurrent
-              ? '#B41513'
-              : '#FFFFFF',
-            borderWidth: 2,
-            borderColor: isCompleted || isCurrent ? '#FFE7E7' : '#CCCCCC',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+    <>
+      <SafeAreaView style={styles.container}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
         >
-          <Text
-            style={{
-              color: isCompleted || isCurrent ? '#FFFFFF' : '#999',
-              fontSize: 12,
-              fontWeight: 'bold',
-            }}
-          >
-            {item}
-          </Text>
-        </View>
-      );
-    })}
-  </View>
-</View>
+          <MaterialCommunityIcons name="arrow-left" size={32} style={{color: theme.text}} />
+        </TouchableOpacity>
+        <ScrollView>
+          <View style={styles.content}>
 
-            {/* ===================== ETAPA 1 ===================== */}
-            {step === 1 && (
-              <>
-                <Text style={Styles.titleinputs}>Nome da (o) amada (o)</Text>
-                <TextInput style={Styles.input} value={belovedName} placeholder='Nome da sua amada (o)' onChangeText={setBelovedName} />
+            <View style={styles.header}>
+              <Image
+                source={require('../../assets/carta-coracao.png')}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+              <Text style={styles.title}>Escreva sua carta!</Text>
+            </View>
 
-                <Text style={Styles.titleinputs}>De:</Text>
-                <TextInput style={Styles.input} value={fromName} placeholder='Quem envia a carta?' onChangeText={setFromName} />
+            <View style={styles.form}>
 
-                <Text style={Styles.titleinputs}>Para:</Text>
-                <TextInput style={Styles.input} value={toName} placeholder='Quem recebera a carta?' onChangeText={setToName} />
-
-                <Text style={Styles.titleinputs}>Data de aniversário</Text>
-                <TouchableOpacity
-                  style={[Styles.input, { justifyContent: 'center' }]}
-                  onPress={() => setShowPicker(true)}
-                >
-                  <Text style={{ color: birthday ? '#000' : '#999' }}>
-                    {birthday ? birthday.split('-').reverse().join('/') : 'Qual o aniversario dela(e)?'}
-                  </Text>
-                </TouchableOpacity>
-
-                <DateTimePickerModal
-                  isVisible={showPicker}
-                  mode="date"
-                  display='spinner'
-                  onConfirm={handleConfirm}
-                  onCancel={() => setShowPicker(false)}
-                  maximumDate={new Date()} // impede datas futuras
+              {/* INDICADOR */}
+              <View style={{ marginHorizontal: 20, marginVertical: 20 }}>
+                {/* Linha de fundo */}
+                <View
+                  style={{
+                    width: BAR_WIDTH,
+                    height: 4,
+                    backgroundColor: '#E0E0E0',
+                    marginHorizontal: HORIZONTAL_PADDING + CIRCLE_SIZE / 2,
+                    borderRadius: 2,
+                    position: 'relative',
+                  }}
                 />
 
-                <Text style={Styles.titleinputs}>Tempo juntos</Text>
-                <TextInput style={Styles.input} value={timeTogether} placeholder='Quanto tempo juntos?' onChangeText={setTimeTogether} />
-              </>
-            )}
+                {/* Linha animada */}
+                <Animated.View
+                  style={{
+                    position: 'absolute',
+                    left: HORIZONTAL_PADDING + CIRCLE_SIZE / 2,
+                    height: 4,
+                    backgroundColor: '#4CAF50',
+                    borderRadius: 2,
+                    width: progressAnim.interpolate({
+                      inputRange: [0, totalSteps - 1],
+                      outputRange: [0, 200],
+                    }),
+                  }}
+                />
 
-            {/* ===================== ETAPA 2 ===================== */}
-            {step === 2 && (
-              <>
-                <Text style={Styles.titleinputs}>Adjetivos para elogiar</Text>
-                <TextInput style={Styles.input} value={compliment} placeholder='Escreva elogios' onChangeText={setCompliment} />
+                {/* Bolinhas */}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginHorizontal: HORIZONTAL_PADDING,
+                    marginTop: -15,
+                  }}
+                >
+                  {[1, 2, 3].map((item) => {
+                    const isCompleted = step > item;
+                    const isCurrent = step === item;
 
-                <Text style={Styles.titleinputs}>Mensagens especiais</Text>
-                <TextInput style={Styles.input} value={specialMessages} placeholder='Escreva uma mensagem' onChangeText={setSpecialMessages} />
-
-                <Text style={Styles.titleinputs}>Coisas que ela(o) gosta</Text>
-                <TextInput style={Styles.input} value={thingsTheyLike} placeholder='Do que ela(e) gosta?' onChangeText={setThingsTheyLike} />
-
-                <Text style={Styles.titleinputs}>Cor preferida</Text>
-                <TextInput style={Styles.input} value={favoriteColor} placeholder='Qual a cor preferida dela(e)?' onChangeText={setFavoriteColor} />
-
-                <Text style={Styles.titleinputs}>Signo</Text>
-                <Picker style={[{ backgroundColor: '#ffffff', }]} selectedValue={signo} onValueChange={setSigno}>
-                  <Picker.Item label="Selecione o signo" value="" />
-                  <Picker.Item label="Áries" value="aries" />
-                  <Picker.Item label="Touro" value="touro" />
-                  <Picker.Item label="Gêmeos" value="gemeos" />
-                  <Picker.Item label="Câncer" value="cancer" />
-                  <Picker.Item label="Leão" value="leao" />
-                  <Picker.Item label="Virgem" value="virgem" />
-                  <Picker.Item label="Libra" value="libra" />
-                  <Picker.Item label="Escorpião" value="escorpiao" />
-                  <Picker.Item label="Sagitário" value="sagitario" />
-                  <Picker.Item label="Capricórnio" value="capricornio" />
-                  <Picker.Item label="Aquário" value="aquario" />
-                  <Picker.Item label="Peixes" value="peixes" />
-                </Picker>
-              </>
-            )}
-
-            {/* ===================== ETAPA 3 ===================== */}
-            {step === 3 && (
-              <>
-                <Text style={Styles.titleinputs}>Adicionar fotos</Text>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                  {photos.map(p => (
-                    <Image key={p.id} source={{ uri: p.uri }} style={Styles.photoBox} />
-                  ))}
-                  <TouchableOpacity style={Styles.photoBox} onPress={pickImage}>
-                    <Text style={{ fontSize: 40, color: '#B41513' }}>+</Text>
-                  </TouchableOpacity>
+                    return (
+                      <View
+                        key={item}
+                        style={{
+                          width: 24,
+                          height: 24,
+                          borderRadius: 12,
+                          backgroundColor: isCompleted
+                            ? '#4CAF50'
+                            : isCurrent
+                              ? '#B41513'
+                              : '#FFFFFF',
+                          borderWidth: 2,
+                          borderColor: isCompleted || isCurrent ? '#FFE7E7' : '#CCCCCC',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: isCompleted || isCurrent ? '#FFFFFF' : '#999',
+                            fontSize: 12,
+                            fontWeight: 'bold',
+                          }}
+                        >
+                          {item}
+                        </Text>
+                      </View>
+                    );
+                  })}
                 </View>
+              </View>
 
-                <Text style={Styles.titleinputs}>Filme preferido</Text>
-                <TextInput style={Styles.input} value={favoriteMovie} placeholder='Qual o filme preferido dela(e)?' onChangeText={setFavoriteMovie} />
+              {/* ===================== ETAPA 1 ===================== */}
+              {step === 1 && (
+                <>
+                  <Text style={styles.titleinputs}>Nome da (o) amada (o)</Text>
+                  <TextInput style={styles.input} value={belovedName} placeholder='Nome da sua amada (o)' onChangeText={setBelovedName} />
 
-                <Text style={Styles.titleinputs}>Comida preferida</Text>
-                <TextInput style={Styles.input} value={favoriteFood} placeholder='Qual a comida preferida dela(e)?' onChangeText={setFavoriteFood} />
+                  <Text style={styles.titleinputs}>De:</Text>
+                  <TextInput style={styles.input} value={fromName} placeholder='Quem envia a carta?' onChangeText={setFromName} />
 
-                <Text style={Styles.titleinputs}>Template</Text>
-                <Picker style={[{ backgroundColor: '#ffffff' }]} selectedValue={templateId} onValueChange={setTemplateId}>
-                  <Picker.Item label="Selecione o template" value="" />
-                  <Picker.Item label="mores" value={1} />
-                </Picker>
+                  <Text style={styles.titleinputs}>Para:</Text>
+                  <TextInput style={styles.input} value={toName} placeholder='Quem recebera a carta?' onChangeText={setToName} />
 
-                {templateId !== '' && (
-                  <Image source={templateImages[templateId]} style={{ width: 250, height: 250 }} />
-                )}
-              </>
-            )}
+                  <Text style={styles.titleinputs}>Data de aniversário</Text>
+                  <TouchableOpacity
+                    style={[styles.input, { justifyContent: 'center' }]}
+                    onPress={() => setShowPicker(true)}
+                  >
+                    <Text style={{ color: birthday ? '#000' : '#999' }}>
+                      {birthday ? birthday.split('-').reverse().join('/') : 'Qual o aniversario dela(e)?'}
+                    </Text>
+                  </TouchableOpacity>
+
+                  <DateTimePickerModal
+                    isVisible={showPicker}
+                    mode="date"
+                    display='spinner'
+                    onConfirm={handleConfirm}
+                    onCancel={() => setShowPicker(false)}
+                    maximumDate={new Date()} // impede datas futuras
+                  />
+
+                  <Text style={styles.titleinputs}>Tempo juntos</Text>
+                  <TextInput style={styles.input} value={timeTogether} placeholder='Quanto tempo juntos?' onChangeText={setTimeTogether} />
+                </>
+              )}
+
+              {/* ===================== ETAPA 2 ===================== */}
+              {step === 2 && (
+                <>
+                  <Text style={styles.titleinputs}>Adjetivos para elogiar</Text>
+                  <TextInput style={styles.input} value={compliment} placeholder='Escreva elogios' onChangeText={setCompliment} />
+
+                  <Text style={styles.titleinputs}>Mensagens especiais</Text>
+                  <TextInput style={styles.input} value={specialMessages} placeholder='Escreva uma mensagem' onChangeText={setSpecialMessages} />
+
+                  <Text style={styles.titleinputs}>Coisas que ela(o) gosta</Text>
+                  <TextInput style={styles.input} value={thingsTheyLike} placeholder='Do que ela(e) gosta?' onChangeText={setThingsTheyLike} />
+
+                  <Text style={styles.titleinputs}>Cor preferida</Text>
+                  <TextInput style={styles.input} value={favoriteColor} placeholder='Qual a cor preferida dela(e)?' onChangeText={setFavoriteColor} />
+
+                  <Text style={styles.titleinputs}>Signo</Text>
+                  <Picker style={[{ backgroundColor: '#ffffff', }]} selectedValue={signo} onValueChange={setSigno}>
+                    <Picker.Item label="Selecione o signo" value="" />
+                    <Picker.Item label="Áries" value="aries" />
+                    <Picker.Item label="Touro" value="touro" />
+                    <Picker.Item label="Gêmeos" value="gemeos" />
+                    <Picker.Item label="Câncer" value="cancer" />
+                    <Picker.Item label="Leão" value="leao" />
+                    <Picker.Item label="Virgem" value="virgem" />
+                    <Picker.Item label="Libra" value="libra" />
+                    <Picker.Item label="Escorpião" value="escorpiao" />
+                    <Picker.Item label="Sagitário" value="sagitario" />
+                    <Picker.Item label="Capricórnio" value="capricornio" />
+                    <Picker.Item label="Aquário" value="aquario" />
+                    <Picker.Item label="Peixes" value="peixes" />
+                  </Picker>
+                </>
+              )}
+
+              {/* ===================== ETAPA 3 ===================== */}
+              {step === 3 && (
+                <>
+                  <Text style={styles.titleinputs}>Adicionar fotos</Text>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                    {photos.map(p => (
+                      <Image key={p.id} source={{ uri: p.uri }} style={styles.photoBox} />
+                    ))}
+                    <TouchableOpacity style={styles.photoBox} onPress={pickImage}>
+                      <Text style={{ fontSize: 40, color: '#B41513' }}>+</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <Text style={styles.titleinputs}>Filme preferido</Text>
+                  <TextInput style={styles.input} value={favoriteMovie} placeholder='Qual o filme preferido dela(e)?' onChangeText={setFavoriteMovie} />
+
+                  <Text style={styles.titleinputs}>Comida preferida</Text>
+                  <TextInput style={styles.input} value={favoriteFood} placeholder='Qual a comida preferida dela(e)?' onChangeText={setFavoriteFood} />
+
+                  <Text style={styles.titleinputs}>Template</Text>
+                  <Picker style={[{ backgroundColor: '#ffffff' }]} selectedValue={templateId} onValueChange={setTemplateId}>
+                    <Picker.Item label="Selecione o template" value="" />
+                    <Picker.Item label="mores" value={1} />
+                  </Picker>
+
+                  {templateId !== '' && (
+                    <Image source={templateImages[templateId]} style={{ width: 250, height: 250 }} />
+                  )}
+                </>
+              )}
+
+            </View>
+
+
+            <View style={styles.buttonContainer}>
+              {step > 1 && (
+                <TouchableOpacity style={styles.button} onPress={() => setStep(step - 1)}>
+                  <Text style={styles.buttonText}>Voltar</Text>
+                </TouchableOpacity>
+              )}
+
+              {step < 3 ? (
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => {
+                    if (validateStep(step)) {
+                      showSuccessToast(`Etapa ${step} preenchida corretamente`);
+                      setStep(step + 1);
+                    }
+                  }}
+                >
+                  <Text style={styles.buttonText}>Próximo</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => {
+                    if (validateStep(3)) {
+                      handleSubmit();
+                    }
+                  }}
+                >
+                  <Text style={styles.buttonText}>Finalizar</Text>
+                </TouchableOpacity>
+              )}
+            </View>
 
           </View>
-
-
-          <View style={Styles.buttonContainer}>
-            {step > 1 && (
-              <TouchableOpacity style={Styles.button} onPress={() => setStep(step - 1)}>
-                <Text style={Styles.buttonText}>Voltar</Text>
-              </TouchableOpacity>
-            )}
-
-            {step < 3 ? (
-              <TouchableOpacity
-                style={Styles.button}
-                onPress={() => {
-                  if (validateStep(step)) {
-                    showSuccessToast(`Etapa ${step} preenchida corretamente`);
-    setStep(step + 1);
-                  }
-                }}
-              >
-                <Text style={Styles.buttonText}>Próximo</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-  style={Styles.button}
-  onPress={() => {
-    if (validateStep(3)) {
-      handleSubmit();
-    }
-  }}
->
-                <Text style={Styles.buttonText}>Finalizar</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+      {loading && <Loading />}
+    </>
   );
 }

@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
 
-export const Styles = StyleSheet.create({
+export const Styles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffffff',
+    backgroundColor: theme.container,
   },
   linkpassword: {
     marginLeft: 160,
@@ -17,7 +17,7 @@ export const Styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    backgroundColor: '#FFE7E7',
+    backgroundColor: theme.background,
   },
   header: {
     alignItems: 'center',
@@ -29,18 +29,18 @@ export const Styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    color: "#B41513",
+    color: theme.text,
     fontSize: 35,
     textAlign: "center",
   },
   title2: {
-    color: "#B41513",
+    color: theme.text,
     fontSize: 25,
     textAlign: "center",
     marginTop: 50,
   },
   titleinputs: {
-    color: "#B41513",
+    color: theme.text,
     fontSize: 25,
     marginBottom: 10,
   },
@@ -53,16 +53,17 @@ export const Styles = StyleSheet.create({
   input: {
     width: 50,
     height: 50,
-    backgroundColor: '#fff',
+    backgroundColor: theme.inputBackground,
     borderRadius: 8,
     paddingHorizontal: 15,
     marginBottom: 15,
     fontSize: 16,
     borderColor: '#ccc',
     textAlign: 'center',
+    color: theme.text,
   },
   button: {
-    backgroundColor: '#FFF',
+    backgroundColor: theme.buttonBackground,
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 25,
@@ -75,7 +76,7 @@ export const Styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: '#B41513',
+    color: theme.buttonText,
     fontSize: 16,
     fontWeight: '600',
   },

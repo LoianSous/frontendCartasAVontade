@@ -10,12 +10,14 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { loginUser } from '../../services/auth';
 import Loading from '../Loading/loading';
 import Toast from 'react-native-toast-message';
+import { useTheme } from '../../theme/ThemeContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Login">;
 
 export default function Login() {
   const navigation = useNavigation<NavigationProp>();
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  const { theme} = useTheme();
 
   const [usuario, setUsuario] = useState('');
   const [password, setPassword] = useState('');
@@ -23,124 +25,118 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [inputError, setInputError] = useState(false);
 
+  const styles = Styles(theme);
+
   const handleLogin = async () => {
-  try {
-    setError("");
-    setInputError(false);
-
-    const response = await loginUser(usuario, password);
-
-    setLoading(true);
-
-    const { token, name, id } = response.data;
-
-    await AsyncStorage.setItem("autToken", token);
-    await AsyncStorage.setItem("userName", name);
-    await AsyncStorage.setItem("userId", String(id));
-
-    await delay(3000);
-
-    navigation.navigate("MainTabs", { screen: "Usuario" });
-
-  } catch (err: any) {
-    setInputError(true);
-
-    const message =
-      err.response?.data?.error ?? "Erro ao conectar ao servidor";
-
-    setError(message);
-
-    Toast.show({
-      type: "error",
-      text1: "Erro no login",
-      text2: message,
-      position: "top",
-      visibilityTime: 3000,
-    });
-
-  } finally {
-    if (loading) {
+    try {
+      setLoading(true);
       await delay(3000);
-      setLoading(false);
-    }
-  }
-};
+      setError("");
+      setInputError(false);
 
+      const response = await loginUser(usuario, password);
+
+      const { token, name, id } = response.data;
+
+      await AsyncStorage.setItem("autToken", token);
+      await AsyncStorage.setItem("userName", name);
+      await AsyncStorage.setItem("userId", String(id));
+
+      navigation.replace("MainTabs", { screen: "Usuario" });
+
+    } catch (err: any) {
+      setInputError(true);
+      setLoading(false);
+
+      const message =
+        err.response?.data?.error ?? "Erro ao conectar ao servidor";
+
+      setError(message);
+
+      Toast.show({
+        type: "error",
+        text1: "Erro no login",
+        text2: message,
+        position: "top",
+      });
+
+    }
+  };
 
   return (
     <>
-      <SafeAreaView style={Styles.container}>
+      <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}
             keyboardShouldPersistTaps="handled">
 
             <TouchableOpacity
-              style={Styles.backButton}
+              style={styles.backButton}
               onPress={() => navigation.goBack()}
             >
               <MaterialCommunityIcons name="arrow-left" size={32} color="#B41513" />
             </TouchableOpacity>
 
-            <View style={Styles.content}>
-              <View style={Styles.header}>
+            <View style={styles.content}>
+              <View style={styles.header}>
                 <Image
                   source={require('../../assets/carta-coracao.png')}
-                  style={Styles.logo}
+                  style={styles.logo}
                   resizeMode="contain"
                 />
-                <Text style={Styles.title}>{"Entre na sua"}</Text>
-                <Text style={Styles.title2}>{"conta."}</Text>
+                <Text style={styles.title}>{"Entre na sua"}</Text>
+                <Text style={styles.title2}>{"conta."}</Text>
               </View>
 
-              <View style={Styles.form}>
-                <Text style={Styles.titleinputs}>Nome</Text>
+              <View style={styles.form}>
+                <Text style={styles.titleinputs}>Nome</Text>
                 <TextInput
                   style={[
-    Styles.input,
-    inputError && { borderColor: "red", borderWidth: 2 }
-  ]}
+                    styles.input,
+                    inputError && { borderColor: "red", borderWidth: 2 }
+                  ]}
                   placeholder="Nome de usuario ou email"
                   placeholderTextColor="#999"
                   keyboardType="email-address"
                   value={usuario}
                   onChangeText={(text) => {
-    setUsuario(text);
-    setInputError(false);
-    setError("");
-  }}
+                    setUsuario(text);
+                    setInputError(false);
+                    setError("");
+                  }}
                 />
-                <Text style={Styles.titleinputs}>Senha</Text>
+                <Text style={styles.titleinputs}>Senha</Text>
                 <TextInput
-  style={[
-    Styles.input,
-    inputError && { borderColor: "red", borderWidth: 2 }
-  ]}
-  placeholder="****************"
-  placeholderTextColor="#999"
-  secureTextEntry
-  value={password}
-  onChangeText={(text) => {
-    setPassword(text);
-    setInputError(false);
-    setError("");
-  }}
-/>
+                  style={[
+                    styles.input,
+                    inputError && { borderColor: "red", borderWidth: 2 }
+                  ]}
+                  placeholder="****************"
+                  placeholderTextColor="#999"
+                  secureTextEntry
+                  value={password}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    setInputError(false);
+                    setError("");
+                  }}
+                />
 
 
-                {error !== '' && <Text style={Styles.error}>{error}</Text>}
+                {error !== '' && <Text style={styles.error}>{error}</Text>}
 
                 <TouchableOpacity
-                  style={Styles.linkpassword}
+                  style={styles.linkpassword}
                   onPress={() => navigation.navigate('Recover')}
                 >
                   <Text style={{ color: "#909090ff", textDecorationLine: 'underline' }}>Esqueci minha senha!</Text>
                 </TouchableOpacity>
               </View>
 
-              <View style={Styles.buttonContainer}>
-                <TouchableOpacity style={Styles.button} onPress={handleLogin}>
-                  <Text style={Styles.buttonText}>Acessar</Text>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                  <Text style={styles.buttonText}>Acessar</Text>
                 </TouchableOpacity>
               </View>
 

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Styles } from './style';
+import { Styles } from './styleAlter';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../types/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { resetPassword } from '../../services/auth';
+import { useTheme } from '../../theme/ThemeContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Alter">;
 
@@ -18,6 +19,9 @@ export default function Alter() {
   const [password, setPassword] = useState('');
   const [confirmpassword, setconfirmPassword] = useState('');
   const [error, setError] = useState('');
+
+  const { theme} = useTheme();
+  const styles = Styles(theme);
 
   useEffect(() => {
     const loadEmail = async () => {
@@ -44,7 +48,7 @@ export default function Alter() {
       const response = await resetPassword(email, password);
 
       Alert.alert("Sucesso!", "Senha alterada com sucesso!");
-      navigation.navigate("Login");
+      navigation.replace("Login");
 
     } catch (err: any) {
       console.log(err);
@@ -58,28 +62,28 @@ export default function Alter() {
   };
 
   return (
-    <SafeAreaView style={Styles.container}>
+    <SafeAreaView style={styles.container}>
       <TouchableOpacity
-        style={Styles.backButton}
+        style={styles.backButton}
         onPress={() => navigation.goBack()}
       >
         <MaterialCommunityIcons name="arrow-left" size={32} color="#B41513" />
       </TouchableOpacity>
 
-      <View style={Styles.content}>
-        <View style={Styles.header}>
+      <View style={styles.content}>
+        <View style={styles.header}>
           <Image
             source={require('../../assets/carta-coracao.png')}
-            style={Styles.logo}
+            style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={Styles.title}>Alterar senha!</Text>
+          <Text style={styles.title}>Alterar senha!</Text>
         </View>
 
-        <View style={Styles.form}>
-          <Text style={Styles.titleinputs}>Nova Senha</Text>
+        <View style={styles.form}>
+          <Text style={styles.titleinputs}>Nova Senha</Text>
           <TextInput
-            style={Styles.input}
+            style={styles.input}
             placeholder="****************"
             placeholderTextColor="#999"
             secureTextEntry
@@ -87,9 +91,9 @@ export default function Alter() {
             onChangeText={setPassword}
           />
 
-          <Text style={Styles.titleinputs}>Confirmar nova senha</Text>
+          <Text style={styles.titleinputs}>Confirmar nova senha</Text>
           <TextInput
-            style={Styles.input}
+            style={styles.input}
             placeholder="****************"
             placeholderTextColor="#999"
             secureTextEntry
@@ -97,12 +101,12 @@ export default function Alter() {
             onChangeText={setconfirmPassword}
           />
 
-          {error !== '' && <Text style={Styles.error}>{error}</Text>}
+          {error !== '' && <Text style={styles.error}>{error}</Text>}
         </View>
 
-        <View style={Styles.buttonContainer}>
-          <TouchableOpacity style={Styles.button} onPress={handleReset}>
-            <Text style={Styles.buttonText}>Alterar senha</Text>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleReset}>
+            <Text style={styles.buttonText}>Alterar senha</Text>
           </TouchableOpacity>
         </View>
 

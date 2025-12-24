@@ -8,6 +8,7 @@ import { RootStackParamList } from '../../types/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
+import { useTheme } from '../../theme/ThemeContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Conclusao">;
 
@@ -15,9 +16,12 @@ export default function Conclusao() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute();
 
+  const { theme, toggleTheme, isDark } = useTheme();
+  const styles = Styles(theme);
+
   const { share_url } = route.params as { share_url: string };
 
-  const fullShareUrl = `http://192.168.1.4:3000/letters/${share_url}`;
+  const fullShareUrl = `http://192.168.1.7:3000/letters/${share_url}`;
 
   const [nomeSalvo, setNomeSalvo] = useState<string | null>(null);
 
@@ -40,49 +44,49 @@ export default function Conclusao() {
   };
 
   return (
-    <SafeAreaView style={Styles.container}>
+    <SafeAreaView style={styles.container}>
       <TouchableOpacity
-                          style={Styles.backButton}
+                          style={styles.backButton}
                           onPress={() => navigation.navigate("MainTabs", { screen: "Usuario" })}
                       >
-                          <View style={Styles.gear}>
+                          <View style={styles.gear}>
       
                               <MaterialCommunityIcons name="arrow-left" size={30} color="#B41513" />
                           </View>
                       </TouchableOpacity>
-      <View style={Styles.content}>
-        <View style={Styles.header}>
+      <View style={styles.content}>
+        <View style={styles.header}>
           <Image
             source={require('../../assets/carta-coracao.png')}
-            style={Styles.logo}
+            style={styles.logo}
             resizeMode="contain"
           />
-            <Text style={Styles.title}>
+            <Text style={styles.title}>
               {"Acesse o QRcode!"}
             </Text>
          
         </View>
 
-        <View style={Styles.form}>
-  <Text style={Styles.titleinputs}>Carta criada!</Text>
+        <View style={styles.form}>
+  <Text style={styles.titleinputs}>Carta criada!</Text>
 
   <View style={{ alignItems: "center", marginTop: 20 }}>
     <QRCode value={fullShareUrl} size={180} />
   </View>
 
   {/* Caso ainda queira exibir o link também */}
-  <Text style={{ color: "#B41513", fontSize: 14, marginTop: 20, textAlign: "center" }}>
+  <Text style={{ color: theme.text, fontSize: 14, marginTop: 20, textAlign: "center" }}>
     {fullShareUrl}
   </Text>
 </View>
 
-        <View style={Styles.buttonContainer}>
-          <TouchableOpacity style={Styles.button} onPress={handleOpenLink}>
-            <Text style={Styles.buttonText}>Acessar</Text>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleOpenLink}>
+            <Text style={styles.buttonText}>Acessar</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={Styles.button2} onPress={handleShare}>
-            <Text style={Styles.buttonText}>Compartilhar</Text>
+          <TouchableOpacity style={styles.button2} onPress={handleShare}>
+            <Text style={styles.buttonText}>Compartilhar</Text>
           </TouchableOpacity>
         </View>
       </View>

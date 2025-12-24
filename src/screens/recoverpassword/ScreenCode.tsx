@@ -8,6 +8,7 @@ import { RootStackParamList } from '../../types/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { recoverVerify } from '../../services/auth';
+import { useTheme } from '../../theme/ThemeContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Code">;
 
@@ -16,6 +17,8 @@ export default function Code() {
 
   const [code, setCode] = useState(["", "", "", "", ""]);
   const [error, setError] = useState("");
+  const { theme} = useTheme();
+  const styles = Styles(theme);
 
   const inputRefs = [
     useRef<TextInput>(null),
@@ -55,7 +58,7 @@ export default function Code() {
 
   try {
     await recoverVerify(savedEmail, finalCode);
-navigation.navigate("Alter");
+navigation.replace("Alter");
 
 
   } catch (err: any) {
@@ -65,31 +68,31 @@ navigation.navigate("Alter");
 };
 
   return (
-    <SafeAreaView style={Styles.container}>
+    <SafeAreaView style={styles.container}>
       <TouchableOpacity
-        style={Styles.backButton}
+        style={styles.backButton}
         onPress={() => navigation.goBack()}
       >
         <MaterialCommunityIcons name="arrow-left" size={32} color="#B41513" />
       </TouchableOpacity>
 
-      <View style={Styles.content}>
-        <View style={Styles.header}>
+      <View style={styles.content}>
+        <View style={styles.header}>
           <Image
             source={require('../../assets/carta-coracao.png')}
-            style={Styles.logo}
+            style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={Styles.title}>Recuperar senha.</Text>
-          <Text style={Styles.title2}>Insira o código{"\n"}de segurança!</Text>
+          <Text style={styles.title}>Recuperar senha.</Text>
+          <Text style={styles.title2}>Insira o código{"\n"}de segurança!</Text>
         </View>
 
-        <View style={Styles.form}>
+        <View style={styles.form}>
           {code.map((value, index) => (
             <TextInput
               key={index}
               ref={inputRefs[index]}
-              style={Styles.input}
+              style={styles.input}
               keyboardType="number-pad"
               placeholder="0"
               maxLength={1}
@@ -99,14 +102,14 @@ navigation.navigate("Alter");
           ))}
         </View>
 
-        {error !== "" && <Text style={Styles.error}>{error}</Text>}
+        {error !== "" && <Text style={styles.error}>{error}</Text>}
 
-        <View style={Styles.buttonContainer}>
+        <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={Styles.button}
+            style={styles.button}
             onPress={() => validateForm(code.join(""))}
           >
-            <Text style={Styles.buttonText}>Validar código</Text>
+            <Text style={styles.buttonText}>Validar código</Text>
           </TouchableOpacity>
         </View>
       </View>

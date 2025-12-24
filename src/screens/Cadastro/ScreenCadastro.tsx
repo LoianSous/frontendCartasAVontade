@@ -8,6 +8,8 @@ import { RootStackParamList } from '../../types/types';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { registerUser } from '../../services/auth';
 import Loading from '../Loading/loading';
+import Toast from 'react-native-toast-message';
+import { useTheme } from '../../theme/ThemeContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Cadastro">;
 
@@ -21,6 +23,19 @@ export default function Cadastro() {
   const [confirmpassword, setconfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { theme } = useTheme();
+
+  const styles = Styles(theme);
+
+  const showSuccessToast = (message: string) => {
+    Toast.show({
+      type: 'success',
+      text1: 'Tudo certo ✅',
+      text2: message,
+      position: 'top',
+      visibilityTime: 2000,
+    });
+  };
 
   const validateForm = async () => {
     setError("");
@@ -66,10 +81,10 @@ export default function Cadastro() {
 
       await registerUser(usuario, usuario, email, password);
 
-      alert("Usuário registrado com sucesso!");
+      showSuccessToast("Usuário registrado com sucesso!");
 
       await delay(3000);
-      navigation.navigate("ConfirmPassword");
+      navigation.replace("ConfirmPassword");
 
     } catch (e) {
       setError("Erro ao registrar usuário");
@@ -82,7 +97,7 @@ export default function Cadastro() {
 
   return (
     <>
-      <SafeAreaView style={Styles.container}>
+      <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}>
 
@@ -90,53 +105,53 @@ export default function Cadastro() {
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}
             keyboardShouldPersistTaps="handled">
             <TouchableOpacity
-              style={Styles.backButton}
+              style={styles.backButton}
               onPress={() => navigation.goBack()}
             >
               <MaterialCommunityIcons name="arrow-left" size={32} color="#B41513" />
             </TouchableOpacity>
-            <View style={Styles.content}>
+            <View style={styles.content}>
 
-              <View style={Styles.header}>
+              <View style={styles.header}>
                 <Image
                   source={require('../../assets/carta-coracao.png')}
-                  style={Styles.logo}
+                  style={styles.logo}
                   resizeMode="contain"
                 />
-                <Text style={Styles.title}>Crie sua conta!</Text>
+                <Text style={styles.title}>Crie sua conta!</Text>
               </View>
 
-              <View style={Styles.form}>
-                <Text style={Styles.titleinputs}>Nome</Text>
+              <View style={styles.form}>
+                <Text style={styles.titleinputs}>Nome</Text>
                 <TextInput
-                  style={Styles.input}
+                  style={styles.input}
                   placeholder="Seu nome"
                   placeholderTextColor="#999"
                   keyboardType="email-address"
                   value={usuario}
                   onChangeText={setUsuario}
                 />
-                <Text style={Styles.titleinputs}>Email</Text>
+                <Text style={styles.titleinputs}>Email</Text>
                 <TextInput
-                  style={Styles.input}
+                  style={styles.input}
                   placeholder="seuemail@email.com"
                   placeholderTextColor="#999"
                   keyboardType="email-address"
                   value={email}
                   onChangeText={setEmail}
                 />
-                <Text style={Styles.titleinputs}>Senha</Text>
+                <Text style={styles.titleinputs}>Senha</Text>
                 <TextInput
-                  style={Styles.input}
+                  style={styles.input}
                   placeholder="****************"
                   placeholderTextColor="#999"
                   secureTextEntry
                   value={password}
                   onChangeText={setPassword}
                 />
-                <Text style={Styles.titleinputs}>Confirmar senha</Text>
+                <Text style={styles.titleinputs}>Confirmar senha</Text>
                 <TextInput
-                  style={Styles.input}
+                  style={styles.input}
                   placeholder="****************"
                   placeholderTextColor="#999"
                   secureTextEntry
@@ -144,12 +159,12 @@ export default function Cadastro() {
                   onChangeText={setconfirmPassword}
                 />
 
-                {error !== '' && <Text style={Styles.error}>{error}</Text>}
+                {error !== '' && <Text style={styles.error}>{error}</Text>}
               </View>
 
-              <View style={Styles.buttonContainer}>
-                <TouchableOpacity style={Styles.button} onPress={validateForm}>
-                  <Text style={Styles.buttonText}>Cadastrar-se</Text>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.button} onPress={validateForm}>
+                  <Text style={styles.buttonText}>Cadastrar-se</Text>
                 </TouchableOpacity>
               </View>
             </View>

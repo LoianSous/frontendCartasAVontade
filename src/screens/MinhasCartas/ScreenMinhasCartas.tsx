@@ -7,6 +7,7 @@ import { RootStackParamList } from '../../types/types';
 import { useEffect, useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserLetters } from '../../services/auth'; 
+import { useTheme } from '../../theme/ThemeContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "EditarCartas">;
 
@@ -14,6 +15,9 @@ export default function MinhasCartas() {
     const navigation = useNavigation<NavigationProp>();
     const [letters, setLetters] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const { theme} = useTheme();
+
+    const styles = Styles(theme);
 
     const loadLetters = async () => {
         try {
@@ -46,16 +50,16 @@ export default function MinhasCartas() {
     );
 
     return (
-        <SafeAreaView style={Styles.container}>
-            <ScrollView style={Styles.content}>
+        <SafeAreaView style={styles.container}>
+            <ScrollView style={styles.content}>
 
-                <View style={Styles.header}>
+                <View style={styles.header}>
                     <Image
                         source={require('../../assets/carta-coracao.png')}
-                        style={Styles.logo}
+                        style={styles.logo}
                         resizeMode="contain"
                     />
-                    <Text style={Styles.title}>Minhas Cartas!</Text>
+                    <Text style={styles.title}>Minhas Cartas!</Text>
                 </View>
 
                 {loading ? (
@@ -66,16 +70,16 @@ export default function MinhasCartas() {
                     </Text>
                 ) : (
                     letters.map((item) => (
-                        <View key={item.id} style={Styles.buttonContainer}>
-                            <Text style={Styles.titlemid}>{item.letter_title || "Sem título"}</Text>
+                        <View key={item.id} style={styles.buttonContainer}>
+                            <Text style={styles.titlemid}>{item.letter_title || "Sem título"}</Text>
 
                             <TouchableOpacity
-                                style={Styles.button}
+                                style={styles.button}
                                 onPress={() =>
-                                    navigation.navigate("EditarCartas", { letterId: item.id })
+                                    navigation.navigate("EditarCartas", { letterId: item.id, shareLink: item.shareLink, share_url: item.share_url,  })
                                 }
                             >
-                                <Text style={Styles.buttonText}>Acessar</Text>
+                                <Text style={styles.buttonText}>Acessar</Text>
                             </TouchableOpacity>
                         </View>
                     ))

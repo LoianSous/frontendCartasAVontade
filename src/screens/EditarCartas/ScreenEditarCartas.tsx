@@ -8,6 +8,7 @@ import { RootStackParamList } from '../../types/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLetterById, deleteLetter } from '../../services/auth';
+import { useTheme } from '../../theme/ThemeContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "EditarCartas">;
 
@@ -16,6 +17,9 @@ export default function EditarCartas() {
     const route = useRoute();
     const { letterId } = route.params as { letterId: number };
     const [letter, setLetter] = useState<any>(null);
+    const { theme } = useTheme();
+
+    const styles = Styles(theme);
 
     const loadLetter = async () => {
     try {
@@ -42,14 +46,14 @@ export default function EditarCartas() {
     }, []);
 
     const handleOpenLink = () => {
-        Linking.openURL(`http://192.168.1.4:3000/letters/${letter.share_url}`);
+        Linking.openURL(`http://192.168.1.7:3000/letters/${letter.share_url}`);
       };
 
     // 🔗 Compartilhar URL
     const handleShare = async () => {
         if (!letter?.share_url) return;
 
-        const url = `http://192.168.1.4:3000/letters/${letter.share_url}`;
+        const url = `http://192.168.1.7:3000/letters/${letter.share_url}`;
 
         await Share.share({
             message: `Veja minha carta: ${url}`,
@@ -99,44 +103,44 @@ export default function EditarCartas() {
 
     if (!letter) {
         return (
-            <SafeAreaView style={Styles.container}>
+            <SafeAreaView style={styles.container}>
                 <Text style={{ textAlign: "center", marginTop: 40 }}>Carregando...</Text>
             </SafeAreaView>
         );
     }
 
     return (
-        <SafeAreaView style={Styles.container}>
-            <ScrollView style={Styles.content}>
+        <SafeAreaView style={styles.container}>
+            <ScrollView style={styles.content}>
 
                 <TouchableOpacity
-                    style={Styles.backButton}
+                    style={styles.backButton}
                     onPress={() => navigation.goBack()}
                 >
-                    <View style={Styles.arrow}>
-                        <MaterialCommunityIcons name="arrow-left" size={30} color="#B41513" />
+                    <View style={styles.arrow}>
+                        <MaterialCommunityIcons name="arrow-left" size={30} style= {{color: theme.text}} />
                     </View>
                 </TouchableOpacity>
 
-                <View style={Styles.header}>
+                <View style={styles.header}>
                     <Image
                         source={require('../../assets/carta-coracao.png')}
-                        style={Styles.logo}
+                        style={styles.logo}
                         resizeMode="contain"
                     />
-                    <Text style={Styles.title}>Editar Carta</Text>
+                    <Text style={styles.title}>Visualizar Carta</Text>
                 </View>
 
-                <View style={Styles.buttonContainer}>
+                <View style={styles.buttonContainer}>
                     
                     {/* BOTÃO COMPARTILHAR */}
-                    <TouchableOpacity style={Styles.compartilhar} onPress={handleShare}>
-                        <View style={Styles.share}>
+                    <TouchableOpacity style={styles.compartilhar} onPress={handleShare}>
+                        <View style={styles.share}>
                             <MaterialCommunityIcons name="share-variant-outline" size={30} color="#B41513" />
                         </View>
                     </TouchableOpacity>
 
-                    <Text style={Styles.titlemid}>{letter.letter_title}</Text>
+                    <Text style={styles.titlemid}>{letter.letter_title}</Text>
                 </View>
 
                 {/* IMAGEM DO TEMPLATE */}
@@ -150,19 +154,19 @@ export default function EditarCartas() {
                 )}
 
                 {/* LINK */}
-                <View style={Styles.boxlink}>
-                    <Text>Link da carta:</Text>
-                    <Text style={{ color: "#B41513" }}>
+                <View style={styles.boxlink}>
+                    <Text style={{ color: theme.text }}>Link da carta:</Text>
+                    <Text style={{ color: theme.text }}>
                         {letter.share_url}
                     </Text>
 
-                    <TouchableOpacity style={Styles.button} onPress={handleOpenLink}>
-                                <Text style={Styles.buttonText}>Acessar</Text>
+                    <TouchableOpacity style={styles.button} onPress={handleOpenLink}>
+                                <Text style={styles.buttonText}>Acessar</Text>
                               </TouchableOpacity>
 
                     {/* Botão Apagar */}
-                    <TouchableOpacity style={Styles.apagar} onPress={handleDelete}>
-                        <View style={Styles.trash}>
+                    <TouchableOpacity style={styles.apagar} onPress={handleDelete}>
+                        <View style={styles.trash}>
                             <MaterialCommunityIcons name="trash-can-outline" size={30} color="#B41513" />
                         </View>
                     </TouchableOpacity>

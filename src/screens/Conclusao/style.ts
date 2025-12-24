@@ -1,13 +1,13 @@
 import { StyleSheet } from 'react-native';
 
-export const Styles = StyleSheet.create({
+export const Styles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffffff',
+    backgroundColor: theme.container,
   },
   content: {
     flex: 1,
-    backgroundColor: '#FFE7E7',
+    backgroundColor: theme.background,
     marginBottom: -50,
   },
   logo: {
@@ -24,12 +24,12 @@ export const Styles = StyleSheet.create({
     paddingHorizontal: 30,
   },
   title: {
-   color: "#B41513",
+   color: theme.text,
     fontSize: 35,
     textAlign: "center",
   },
   titleinputs: {
-    color: "#B41513",
+    color: theme.text,
     fontSize: 25,
     marginBottom: 10,
     alignItems: 'center',
@@ -46,14 +46,14 @@ export const Styles = StyleSheet.create({
     borderColor: '#ccc',
   },
   button: {
-    backgroundColor: '#FFF',
+    backgroundColor: theme.buttonBackground,
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 25,
     marginTop: 10,
   },
   button2:{
-    backgroundColor: '#FFF',
+    backgroundColor: theme.buttonBackground,
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 25,
@@ -80,7 +80,7 @@ export const Styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: '#B41513',
+    color: theme.buttonText,
     fontSize: 16,
     fontWeight: '600',
   },

@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
 
-export const Styles = StyleSheet.create({
+export const Styles = ( theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffffff',
+    backgroundColor: theme.container,
   },
   backButton: {
     position: 'absolute',
@@ -14,11 +14,11 @@ export const Styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    backgroundColor: '#FFE7E7',
+    backgroundColor: theme.background,
   },
   title: {
     fontSize: 28,
-    color: '#B41513',
+    color: theme.text,
     marginBottom: 20,
     textAlign: 'center',
     fontWeight: '400',
@@ -37,20 +37,21 @@ export const Styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 50,
-    backgroundColor: '#fff',
+    backgroundColor: theme.inputBackground,
     borderRadius: 8,
     paddingHorizontal: 15,
     marginBottom: 15,
     fontSize: 16,
     borderColor: '#ccc',
+    color: theme.text,
   },
   titleinputs: {
-    color: "#B41513",
+    color: theme.text,
     fontSize: 20,
     marginBottom: 10,
   },
   button: {
-    backgroundColor: '#FFF',
+    backgroundColor: theme.buttonBackground,
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 25,
@@ -63,7 +64,7 @@ export const Styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: '#B41513',
+    color: theme.buttonText,
     fontSize: 16,
     fontWeight: '600',
   },

@@ -1,5 +1,6 @@
 import Navigator from './src/navigation/navigator';
 import Toast, { BaseToast } from 'react-native-toast-message';
+import { ThemeProvider } from './src/theme/ThemeContext';
 
 const toastConfig = {
   error: (props: any) => (
@@ -42,11 +43,13 @@ const toastConfig = {
   ),
 };
 
-export default function App(){
-  return ( 
+export default function App() {
+  return (
     <>
-      <Navigator/>
-      <Toast config={toastConfig}/>
+      <ThemeProvider>
+        <Navigator />
+        <Toast config={toastConfig} />
+      </ThemeProvider>
     </>
   );
 }

@@ -7,16 +7,18 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../types/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTheme } from '../../theme/ThemeContext';
 
 import { getUserProfile } from '../../services/auth'; 
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Configuracao">;
 
 export default function Perfil() {
-
   const navigation = useNavigation<NavigationProp>();
-
+  const { theme} = useTheme();
   const [profile, setProfile] = useState<any | null>(null);
+
+  const styles = Styles(theme);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -36,20 +38,20 @@ export default function Perfil() {
   }, []);
 
   return (
-    <SafeAreaView style={Styles.container}>
-      <ScrollView style={Styles.content}>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.content}>
 
         <TouchableOpacity
-          style={Styles.backButton}
+          style={styles.backButton}
           onPress={() => navigation.navigate("Configuracao")}
         >
-          <View style={Styles.gear}>
+          <View style={styles.gear}>
             <MaterialCommunityIcons name="cog" size={30} color="#B41513" />
           </View>
         </TouchableOpacity>
 
-        <View style={Styles.header}>
-          <View style={Styles.profile}>
+        <View style={styles.header}>
+          <View style={styles.profile}>
             <MaterialCommunityIcons
               name="account-heart-outline"
               size={50}
@@ -58,18 +60,18 @@ export default function Perfil() {
           </View>
 
           {profile && (
-            <Text style={Styles.title}>
+            <Text style={styles.title}>
               {"Perfil!\n"} {profile.name}
             </Text>
           )}
         </View>
 
-        <View style={Styles.info}>
-          <Text style={Styles.titlemid}>{profile?.email}</Text>
+        <View style={styles.info}>
+          <Text style={styles.titlemid}>{profile?.email}</Text>
         </View>
 
-        <View style={Styles.info}>
-          <Text style={Styles.titlemid}>
+        <View style={styles.info}>
+          <Text style={styles.titlemid}>
             {`Data de criação: ${
               profile?.created_at
                 ? new Date(profile.created_at).toLocaleDateString("pt-BR")
@@ -78,8 +80,8 @@ export default function Perfil() {
           </Text>
         </View>
 
-        <View style={Styles.info}>
-          <Text style={Styles.titlemid}>
+        <View style={styles.info}>
+          <Text style={styles.titlemid}>
             {`Quantidade de cartas: ${profile?.letter_qty}`}
           </Text>
         </View>

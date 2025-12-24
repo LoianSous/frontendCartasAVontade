@@ -1,12 +1,12 @@
 import { StyleSheet } from 'react-native';
 
-export const Styles = StyleSheet.create({
+export const Styles = (theme:any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffffff',
+    backgroundColor: theme.container,
   },
   content: {
-    backgroundColor: '#FFE7E7',
+    backgroundColor: theme.background,
     marginBottom: -50,
   },
   box: {
@@ -23,7 +23,7 @@ export const Styles = StyleSheet.create({
     marginTop: 30,
     fontSize: 35,
     marginLeft: 20,
-    color: '#B41513',
+    color: theme.text,
   },
   logo: {
     width: 144,
@@ -62,7 +62,7 @@ export const Styles = StyleSheet.create({
     marginLeft: 10,
   },
   title: {
-    color: "#B41513",
+    color: theme.text,
     fontSize: 35,
     textAlign: "center",
     marginBottom: 60,
@@ -70,7 +70,7 @@ export const Styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: '#555',
+    color: theme.text,
     marginBottom: 30,
     textAlign: 'center',
   },
@@ -101,7 +101,7 @@ export const Styles = StyleSheet.create({
     marginTop: 30,
   },
   titlemid: {
-    color: "#9d9d9dff",
+    color: theme.text,
     fontSize: 15,
     textAlign: "center",
   },
@@ -114,20 +114,15 @@ export const Styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    backgroundColor: '#FFF',
+    backgroundColor: theme.buttonBackground,
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 25,
     marginTop: 10,
   },
   buttonText: {
-    color: '#B41513',
+    color: theme.buttonBackground,
     fontSize: 20,
     fontWeight: '600',
-  },
-  buttoncadastro: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 25,
-    padding: 11,
   },
 });

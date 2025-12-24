@@ -23,7 +23,7 @@ export default function Home() {
       </View>
       <View style={Styles.buttonContainer}>
         <Text style={Styles.title2}>Cadastrado com Sucesso!</Text>
-        <TouchableOpacity style={Styles.button} onPress={() => navigation.navigate("MainTabs", { screen: "Usuario" })}>
+        <TouchableOpacity style={Styles.button} onPress={() => navigation.replace("MainTabs", { screen: "Usuario" })}>
           <Text style={Styles.buttonText}>Inicio</Text>
         </TouchableOpacity>
       </View>

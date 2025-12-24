@@ -4,29 +4,34 @@ import { Styles } from './style';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../types/types';
+import { useTheme } from '../../theme/ThemeContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">;
 
 export default function Home() {
   const navigation = useNavigation<NavigationProp>();
+  const { theme, toggleTheme, isDark } = useTheme();
+
+  const styles = Styles(theme);
+
   return (
-    <SafeAreaView style={Styles.container}>
-      <View style={Styles.content}>
-      <View style={Styles.header}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+      <View style={styles.header}>
         <Image
           source={require('../../assets/carta-coracao.png')}
-          style={Styles.logo}
+          style={styles.logo}
           resizeMode="contain"
         />
-        <Text style={Styles.title}>Faça sua cartinha especial!</Text>
+        <Text style={styles.title}>Faça sua cartinha especial!</Text>
       </View>
-      <View style={Styles.buttonContainer}>
-        <TouchableOpacity style={Styles.button} onPress={() => navigation.navigate('Login')}>
-          <Text style={Styles.buttonText}>Entrar</Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
-        <Text style={Styles.titlemid}>{"Ou"}</Text>
-        <TouchableOpacity style={Styles.buttoncadastro} onPress={() => navigation.navigate('Cadastro')}>
-          <Text style={Styles.buttonText}>Cadastrar-se</Text>
+        <Text style={styles.titlemid}>{"Ou"}</Text>
+        <TouchableOpacity style={styles.buttoncadastro} onPress={() => navigation.navigate('Cadastro')}>
+          <Text style={styles.buttonText}>Cadastrar-se</Text>
         </TouchableOpacity>
       </View>
 
