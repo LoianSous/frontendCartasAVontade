@@ -14,13 +14,40 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function Usuario() {
   const navigation = useNavigation<NavigationProp>();
-  const { theme, toggleTheme, isDark } = useTheme();
+  const { theme, setTheme, currentTheme } = useTheme();
   const [nomeCarta, setnomeCarta] = useState('');
   const [error, setError] = useState('');
   const [nomeSalvo, setNomeSalvo] = useState<string | null>(null);
   const [showThemeModal, setShowThemeModal] = useState(false);
 
   const styles = Styles(theme);
+
+  type ThemeOptionProps = {
+  label: string;
+  onPress: () => void;
+  theme: any;
+};
+
+const ThemeOption = ({ label, onPress, theme }: ThemeOptionProps) => (
+  <TouchableOpacity
+    onPress={onPress}
+    style={{
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.inputBackground,
+    }}
+  >
+    <Text
+      style={{
+        color: theme.text,
+        fontSize: 16,
+      }}
+    >
+      {label}
+    </Text>
+  </TouchableOpacity>
+);
+
 
   useEffect(() => {
     const loadUserName = async () => {
@@ -91,49 +118,100 @@ export default function Usuario() {
 
       </View>
       <Modal transparent animationType="fade" visible={showThemeModal}>
-  <View style={{
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center'
-  }}>
-    <View style={{
-      width: '80%',
-      borderRadius: 12,
-      padding: 20,
-      backgroundColor: theme.container
-    }}>
-
-      <Text style={{ color: theme.text, fontSize: 18, marginBottom: 20 }}>
-        Escolha o tema
+  <View
+    style={{
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.4)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}
+  >
+    <View
+      style={{
+        width: '85%',
+        borderRadius: 16,
+        padding: 20,
+        backgroundColor: theme.container,
+      }}
+    >
+      <Text
+        style={{
+          color: theme.text,
+          fontSize: 18,
+          fontWeight: '600',
+          marginBottom: 20,
+        }}
+      >
+        🎨 Escolha o tema
       </Text>
 
-      <TouchableOpacity
+      {/* LISTA DE TEMAS */}
+      <ThemeOption
+        label="🌞 Tema Claro"
         onPress={() => {
-          if (isDark) toggleTheme();
+          setTheme('light');
           setShowThemeModal(false);
         }}
-      >
-        <Text style={{ color: theme.text, fontSize: 16 }}>
-          🌞 Tema Claro
-        </Text>
-      </TouchableOpacity>
+        theme={theme}
+      />
 
-      <TouchableOpacity
-        style={{ marginTop: 15 }}
+      <ThemeOption
+        label="🌙 Tema Escuro"
         onPress={() => {
-          if (!isDark) toggleTheme();
+          setTheme('dark');
           setShowThemeModal(false);
         }}
-      >
-        <Text style={{ color: theme.text, fontSize: 16 }}>
-          🌙 Tema Escuro
-        </Text>
-      </TouchableOpacity>
+        theme={theme}
+      />
 
+      <ThemeOption
+        label="🎩 Elegante"
+        onPress={() => {
+          setTheme('elegant');
+          setShowThemeModal(false);
+        }}
+        theme={theme}
+      />
+
+      <ThemeOption
+        label="😄 Jovem"
+        onPress={() => {
+          setTheme('young');
+          setShowThemeModal(false);
+        }}
+        theme={theme}
+      />
+
+      <ThemeOption
+        label="🚀 Futurista"
+        onPress={() => {
+          setTheme('futuristic');
+          setShowThemeModal(false);
+        }}
+        theme={theme}
+      />
+
+      <ThemeOption
+        label="🧸 Minimalista"
+        onPress={() => {
+          setTheme('minimal');
+          setShowThemeModal(false);
+        }}
+        theme={theme}
+      />
+
+      <ThemeOption
+        label="🧓 Clássico"
+        onPress={() => {
+          setTheme('classic');
+          setShowThemeModal(false);
+        }}
+        theme={theme}
+      />
     </View>
   </View>
 </Modal>
+
 
 
     </SafeAreaView>

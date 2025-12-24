@@ -1,38 +1,37 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LightTheme, DarkTheme } from './themes';
-
-type ThemeType = typeof LightTheme;
+import { themes, ThemeName, ThemeType } from './themes';
 
 interface ThemeContextProps {
   theme: ThemeType;
-  isDark: boolean;
-  toggleTheme: () => void;
+  currentTheme: ThemeName;
+  setTheme: (themeName: ThemeName) => void;
 }
 
 const ThemeContext = createContext<ThemeContextProps>({} as ThemeContextProps);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isDark, setIsDark] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState<ThemeName>('light');
 
   useEffect(() => {
-    AsyncStorage.getItem('@theme').then(value => {
-      if (value === 'dark') setIsDark(true);
+    AsyncStorage.getItem('@theme').then(storedTheme => {
+      if (storedTheme && storedTheme in themes) {
+        setCurrentTheme(storedTheme as ThemeName);
+      }
     });
   }, []);
 
-  const toggleTheme = async () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    await AsyncStorage.setItem('@theme', newTheme ? 'dark' : 'light');
+  const setTheme = async (themeName: ThemeName) => {
+    setCurrentTheme(themeName);
+    await AsyncStorage.setItem('@theme', themeName);
   };
 
   return (
     <ThemeContext.Provider
       value={{
-        theme: isDark ? DarkTheme : LightTheme,
-        isDark,
-        toggleTheme,
+        theme: themes[currentTheme],
+        currentTheme,
+        setTheme,
       }}
     >
       {children}
