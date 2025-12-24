@@ -17,7 +17,7 @@ export default function Conclusao() {
 
   const { share_url } = route.params as { share_url: string };
 
-  const fullShareUrl = `http://192.168.1.6:3000/letters/${share_url}`;
+  const fullShareUrl = `http://192.168.1.4:3000/letters/${share_url}`;
 
   const [nomeSalvo, setNomeSalvo] = useState<string | null>(null);
 

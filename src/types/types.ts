@@ -9,7 +9,7 @@ export type RootStackParamList = {
   Code: undefined;
   Alter: undefined;
   Configuracao: undefined;
-  EditarCartas: {letterId : number};
+  EditarCartas: {letterId : number, shareLink: string, share_url: string, };
   MainTabs: {
     screen?: "Usuario" | "MinhasCartas";
   } | undefined;

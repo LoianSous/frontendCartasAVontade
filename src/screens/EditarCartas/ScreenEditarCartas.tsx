@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, Share, Alert } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, Share, Alert, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Styles } from './style';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -14,9 +14,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, "EditarCarta
 export default function EditarCartas() {
     const navigation = useNavigation<NavigationProp>();
     const route = useRoute();
-
     const { letterId } = route.params as { letterId: number };
-
     const [letter, setLetter] = useState<any>(null);
 
     const loadLetter = async () => {
@@ -43,11 +41,15 @@ export default function EditarCartas() {
         loadLetter();
     }, []);
 
+    const handleOpenLink = () => {
+        Linking.openURL(`http://192.168.1.4:3000/letters/${letter.share_url}`);
+      };
+
     // 🔗 Compartilhar URL
     const handleShare = async () => {
         if (!letter?.share_url) return;
 
-        const url = `http://192.168.1.6:3000/letters/${letter.share_url}`;
+        const url = `http://192.168.1.4:3000/letters/${letter.share_url}`;
 
         await Share.share({
             message: `Veja minha carta: ${url}`,
@@ -153,6 +155,10 @@ export default function EditarCartas() {
                     <Text style={{ color: "#B41513" }}>
                         {letter.share_url}
                     </Text>
+
+                    <TouchableOpacity style={Styles.button} onPress={handleOpenLink}>
+                                <Text style={Styles.buttonText}>Acessar</Text>
+                              </TouchableOpacity>
 
                     {/* Botão Apagar */}
                     <TouchableOpacity style={Styles.apagar} onPress={handleDelete}>
