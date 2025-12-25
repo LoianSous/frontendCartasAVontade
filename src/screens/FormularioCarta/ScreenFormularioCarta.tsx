@@ -131,14 +131,21 @@ export default function FormularioCarta() {
   };
 
   const handleConfirm = (date: Date) => {
-    const iso = date.toISOString().split("T")[0];
-    setBirthday(iso);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day}`;
+    setBirthday(formattedDate);
     setShowPicker(false);
   };
+
+  const MAX_PHOTOS = 10;
 
   const pickImage = async () => {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
       if (status !== "granted") {
         showToast("Permissão para acessar a galeria é necessária.");
         return;
@@ -146,24 +153,46 @@ export default function FormularioCarta() {
 
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsMultipleSelection: true,
         quality: 0.8,
       });
 
       if (result.canceled) return;
 
-      const asset = result.assets[0];
+      const remainingSlots = MAX_PHOTOS - photos.length;
 
-      // asset.mimeType e asset.fileName podem estar undefined em alguns devices
-      const mime = asset.mimeType || (asset.uri?.includes(".") ? `image/${asset.uri.split(".").pop()}` : "image/jpeg");
-      const name = asset.fileName || `photo_${Date.now()}.${(asset.uri?.split(".").pop() || "jpg")}`;
+      if (remainingSlots <= 0) {
+        showToast("Você já atingiu o limite de 10 fotos.");
+        return;
+      }
 
-      console.log("PICKED -> URI:", asset.uri, "MIME:", mime, "NAME:", name);
+      const selectedAssets = result.assets.slice(0, remainingSlots);
 
-      const tempId = Date.now();
+      const newPhotos = selectedAssets.map((asset) => {
+        const ext = asset.uri.split(".").pop() || "jpg";
 
-      setPhotos(prev => [...prev, { id: tempId, uri: asset.uri, mime, name }]);
+        const mime =
+          asset.mimeType ||
+          (ext === "jpg" ? "image/jpeg" : `image/${ext}`);
+
+        const name =
+          asset.fileName ||
+          `photo_${Date.now()}_${Math.random()
+            .toString(36)
+            .substring(2)}.${ext}`;
+
+        return {
+          id: Date.now() + Math.random(),
+          uri: asset.uri,
+          mime,
+          name,
+        };
+      });
+
+      setPhotos((prev) => [...prev, ...newPhotos]);
+
     } catch (err) {
-      console.log("Erro em pickImage:", err);
+      console.log("Erro ao selecionar imagens:", err);
     }
   };
 
