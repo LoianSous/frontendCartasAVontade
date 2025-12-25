@@ -73,4 +73,39 @@ export const Styles = (theme: any) => StyleSheet.create({
     fontSize: 14,
     marginBottom: 10,
   },
+  modalOverlay: {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: 'rgba(0,0,0,0.6)',
+  justifyContent: 'center',
+  alignItems: 'center',
+  zIndex: 999, // 🔥 importante
+},
+modalContainer: {
+  width: '85%',
+  backgroundColor: '#FFF',
+  borderRadius: 10,
+  padding: 20,
+},
+
+modalTitle: {
+  fontSize: 18,
+  fontWeight: 'bold',
+  marginBottom: 10,
+},
+
+modalText: {
+  marginBottom: 15,
+  color: '#555',
+},
+
+cancelText: {
+  textAlign: 'center',
+  marginTop: 10,
+  color: '#B41513',
+},
+
 });

@@ -8,13 +8,20 @@ export async function loginUser(identifier: string, password: string){
 }
 
 export async function registerUser(name: string, username: string, email: string, password: string){
-  return api.post("/register", {
+  return api.post("/register/request", {
     name,
     username,
     email,
     password
   });
 }
+
+export const confirmEmailCode = (email: string, code: string) => {
+  return api.post('/register/confirm', {
+    email,
+    code,
+  });
+};
 
 export async function recoverRequest(email: string) {
   return api.post("/recover-request", {

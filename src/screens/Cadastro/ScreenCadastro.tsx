@@ -10,6 +10,7 @@ import { registerUser } from '../../services/auth';
 import Loading from '../Loading/loading';
 import Toast from 'react-native-toast-message';
 import { useTheme } from '../../theme/ThemeContext';
+import { confirmEmailCode } from '../../services/auth';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Cadastro">;
 
@@ -24,6 +25,9 @@ export default function Cadastro() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { theme } = useTheme();
+  const [showCodeModal, setShowCodeModal] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+
 
   const styles = Styles(theme);
 
@@ -80,23 +84,81 @@ export default function Cadastro() {
       }
 
       await registerUser(usuario, usuario, email, password);
+      setLoading(false);
+      // se deu certo → abre o modal
+      setShowCodeModal(true);
 
-      showSuccessToast("Usuário registrado com sucesso!");
-
-      await delay(3000);
-      navigation.replace("ConfirmPassword");
+      showSuccessToast("Enviamos um código para seu email 📧");
 
     } catch (e) {
       setError("Erro ao registrar usuário");
 
     } finally {
-      await delay(1000);
       setLoading(false);
     }
   };
 
+  const confirmCode = async () => {
+  if (!verificationCode.trim()) {
+    setError("Digite o código enviado ao email");
+    return;
+  }
+
+  setLoading(true);
+  setError("");
+
+  try {
+    await confirmEmailCode(email, verificationCode);
+
+    Toast.show({
+      type: 'success',
+      text1: 'Email verificado ✅',
+      text2: 'Conta criada com sucesso!',
+    });
+
+    setShowCodeModal(false);
+    navigation.replace("ConfirmPassword");
+
+  } catch (err) {
+    setError("Código inválido ou expirado");
+  } finally {
+    setLoading(false);
+  }
+};
+
   return (
+    
     <>
+    {showCodeModal && (
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContainer}>
+      <Text style={styles.modalTitle}>Verifique seu email</Text>
+
+      <Text style={styles.modalText}>
+        Digite o código que enviamos para {email}
+      </Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Código de verificação"
+        keyboardType="numeric"
+        value={verificationCode}
+        onChangeText={setVerificationCode}
+      />
+
+      {error !== '' && <Text style={styles.error}>{error}</Text>}
+
+      <TouchableOpacity style={styles.button} onPress={confirmCode}>
+        <Text style={styles.buttonText}>Confirmar</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => setShowCodeModal(false)}>
+        <Text style={styles.cancelText}>Cancelar</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+)}
+
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}>
