@@ -86,4 +86,23 @@ photoBox: {
     fontSize: 14,
     marginBottom: 10,
   },
+  photoWrapper: {
+  position: 'relative',
+  marginRight: 8,
+  marginBottom: 8,
+},
+
+removePhotoButton: {
+  position: 'absolute',
+  top: 4,
+  right: 4,
+  backgroundColor: 'red',
+  borderRadius: 12,
+  width: 24,
+  height: 24,
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 10,
+},
+
 });

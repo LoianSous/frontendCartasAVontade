@@ -44,7 +44,7 @@ export default function FormularioCarta() {
   const [photos, setPhotos] = useState<{ id: number; uri: string; mime?: string; name?: string }[]>([]);
   const [showPicker, setShowPicker] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { theme} = useTheme();
+  const { theme } = useTheme();
 
   const styles = Styles(theme);
 
@@ -332,6 +332,10 @@ export default function FormularioCarta() {
     1: require("../../assets/template1.png")
   };
 
+  const removePhoto = (id: number) => {
+    setPhotos(prev => prev.filter(photo => photo.id !== id));
+  };
+
 
   return (
     <>
@@ -340,7 +344,7 @@ export default function FormularioCarta() {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <MaterialCommunityIcons name="arrow-left" size={32} style={{color: theme.text}} />
+          <MaterialCommunityIcons name="arrow-left" size={32} style={{ color: theme.text }} />
         </TouchableOpacity>
         <ScrollView>
           <View style={styles.content}>
@@ -507,8 +511,23 @@ export default function FormularioCarta() {
                   <Text style={styles.titleinputs}>Adicionar fotos</Text>
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                     {photos.map(p => (
-                      <Image key={p.id} source={{ uri: p.uri }} style={styles.photoBox} />
+                      <View key={p.id} style={styles.photoWrapper}>
+                        <Image source={{ uri: p.uri }} style={styles.photoBox} />
+
+                        <TouchableOpacity
+                          style={styles.removePhotoButton}
+                          onPress={() => removePhoto(p.id)}
+                          activeOpacity={0.8}
+                        >
+                          <MaterialCommunityIcons
+                            name="close"
+                            size={18}
+                            color="#fff"
+                          />
+                        </TouchableOpacity>
+                      </View>
                     ))}
+
                     <TouchableOpacity style={styles.photoBox} onPress={pickImage}>
                       <Text style={{ fontSize: 40, color: '#B41513' }}>+</Text>
                     </TouchableOpacity>
