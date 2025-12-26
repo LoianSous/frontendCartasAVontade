@@ -14,7 +14,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function Usuario() {
   const navigation = useNavigation<NavigationProp>();
-  const { theme, setTheme, currentTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [nomeCarta, setnomeCarta] = useState('');
   const [error, setError] = useState('');
   const [nomeSalvo, setNomeSalvo] = useState<string | null>(null);

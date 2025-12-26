@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, Platform, Share } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Styles } from './style';
 import { useNavigation } from '@react-navigation/native';
@@ -143,58 +143,68 @@ export default function FormularioCarta() {
   const MAX_PHOTOS = 10;
 
   const pickImage = async () => {
-    try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  try {
+    // 🔍 Verifica permissão atual
+    const permission = await ImagePicker.getMediaLibraryPermissionsAsync();
 
-      if (status !== "granted") {
-        showToast("Permissão para acessar a galeria é necessária.");
+    // ❌ Se não tiver permissão, tenta pedir
+    if (!permission.granted) {
+      const request = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      // ❌ Usuário negou (ou marcou "não perguntar novamente")
+      if (!request.granted) {
+        showToast("Ative o acesso à galeria nas configurações do app.");
+        Linking.openSettings();
         return;
       }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsMultipleSelection: true,
-        quality: 0.8,
-      });
-
-      if (result.canceled) return;
-
-      const remainingSlots = MAX_PHOTOS - photos.length;
-
-      if (remainingSlots <= 0) {
-        showToast("Você já atingiu o limite de 10 fotos.");
-        return;
-      }
-
-      const selectedAssets = result.assets.slice(0, remainingSlots);
-
-      const newPhotos = selectedAssets.map((asset) => {
-        const ext = asset.uri.split(".").pop() || "jpg";
-
-        const mime =
-          asset.mimeType ||
-          (ext === "jpg" ? "image/jpeg" : `image/${ext}`);
-
-        const name =
-          asset.fileName ||
-          `photo_${Date.now()}_${Math.random()
-            .toString(36)
-            .substring(2)}.${ext}`;
-
-        return {
-          id: Date.now() + Math.random(),
-          uri: asset.uri,
-          mime,
-          name,
-        };
-      });
-
-      setPhotos((prev) => [...prev, ...newPhotos]);
-
-    } catch (err) {
-      console.log("Erro ao selecionar imagens:", err);
     }
-  };
+
+    // ✅ Permissão concedida → abre galeria
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      quality: 0.8,
+    });
+
+    if (result.canceled) return;
+
+    const remainingSlots = MAX_PHOTOS - photos.length;
+
+    if (remainingSlots <= 0) {
+      showToast("Você já atingiu o limite de 10 fotos.");
+      return;
+    }
+
+    const selectedAssets = result.assets.slice(0, remainingSlots);
+
+    const newPhotos = selectedAssets.map((asset) => {
+      const ext = asset.uri.split(".").pop() || "jpg";
+
+      const mime =
+        asset.mimeType ||
+        (ext === "jpg" ? "image/jpeg" : `image/${ext}`);
+
+      const name =
+        asset.fileName ||
+        `photo_${Date.now()}_${Math.random()
+          .toString(36)
+          .substring(2)}.${ext}`;
+
+      return {
+        id: Date.now() + Math.random(),
+        uri: asset.uri,
+        mime,
+        name,
+      };
+    });
+
+    setPhotos((prev) => [...prev, ...newPhotos]);
+
+  } catch (err) {
+    console.log("Erro ao selecionar imagens:", err);
+    showToast("Erro ao acessar a galeria.");
+  }
+};
 
   const base64ToUint8Array = (base64: string) => {
     const binaryString = globalThis.atob
