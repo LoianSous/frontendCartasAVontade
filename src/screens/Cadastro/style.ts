@@ -45,6 +45,10 @@ export const Styles = (theme: any) => StyleSheet.create({
     borderColor: '#ccc',
     color: theme.text,
   },
+  inputError: {
+  borderWidth: 1.5,
+  borderColor: '#B41513',
+},
   titleinputs: {
     color: theme.text,
     fontSize: 20,
