@@ -10,7 +10,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">;
 
 export default function Home() {
   const navigation = useNavigation<NavigationProp>();
-  const { theme, toggleTheme, isDark } = useTheme();
+  const { theme } = useTheme();
 
   const styles = Styles(theme);
 
@@ -19,7 +19,7 @@ export default function Home() {
       <View style={styles.content}>
       <View style={styles.header}>
         <Image
-          source={require('../../assets/carta-coracao.png')}
+          source={require('../../../assets/carta-coracao.png')}
           style={styles.logo}
           resizeMode="contain"
         />

@@ -16,7 +16,7 @@ export default function Conclusao() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute();
 
-  const { theme, toggleTheme, isDark } = useTheme();
+  const { theme } = useTheme();
   const styles = Styles(theme);
 
   const { share_url } = route.params as { share_url: string };
@@ -57,7 +57,7 @@ export default function Conclusao() {
       <View style={styles.content}>
         <View style={styles.header}>
           <Image
-            source={require('../../assets/carta-coracao.png')}
+            source={require('../../../assets/carta-coracao.png')}
             style={styles.logo}
             resizeMode="contain"
           />

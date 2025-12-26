@@ -73,7 +73,7 @@ export default function Alter() {
       <View style={styles.content}>
         <View style={styles.header}>
           <Image
-            source={require('../../assets/carta-coracao.png')}
+            source={require('../../../assets/carta-coracao.png')}
             style={styles.logo}
             resizeMode="contain"
           />

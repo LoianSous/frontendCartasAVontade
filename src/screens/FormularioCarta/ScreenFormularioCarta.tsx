@@ -368,7 +368,7 @@ export default function FormularioCarta() {
   };
 
   const templateImages: any = {
-    1: require("../../assets/template1.png")
+    1: require("../../../assets/template1.png")
   };
 
   const removePhoto = (id: number) => {
@@ -390,7 +390,7 @@ export default function FormularioCarta() {
 
             <View style={styles.header}>
               <Image
-                source={require('../../assets/carta-coracao.png')}
+                source={require('../../../assets/carta-coracao.png')}
                 style={styles.logo}
                 resizeMode="contain"
               />

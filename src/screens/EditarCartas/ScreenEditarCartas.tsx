@@ -95,7 +95,7 @@ export default function EditarCartas() {
 
         switch (letter.template_id) {
             case 1:
-                return require("../../assets/template1.png");
+                return require("../../../assets/template1.png");
             default:
                 return null;
         }
@@ -124,7 +124,7 @@ export default function EditarCartas() {
 
                 <View style={styles.header}>
                     <Image
-                        source={require('../../assets/carta-coracao.png')}
+                        source={require('../../../assets/carta-coracao.png')}
                         style={styles.logo}
                         resizeMode="contain"
                     />

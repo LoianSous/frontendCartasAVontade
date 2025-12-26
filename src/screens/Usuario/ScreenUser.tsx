@@ -82,7 +82,7 @@ const ThemeOption = ({ label, onPress, theme }: ThemeOptionProps) => (
 
         <View style={styles.header}>
           <Image
-            source={require('../../assets/carta-coracao.png')}
+            source={require('../../../assets/carta-coracao.png')}
             style={styles.logo}
             resizeMode="contain"
           />
